@@ -64,3 +64,10 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
+
+
+forge --init: create a project and compile the contract
+cast: 
+anvil: used to deploy local blockchain
+

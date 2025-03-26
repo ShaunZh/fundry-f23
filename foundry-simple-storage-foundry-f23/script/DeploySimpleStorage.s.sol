@@ -10,8 +10,8 @@ contract DeploySimpleStorage is Script {
     function setUp() public {}
 
     function run() public {
-        vm.startBroadcast();        
+        vm.startBroadcast();
         simpleStorage = new SimpleStorage();
-        vm.stopBroadcast(); 
+        vm.stopBroadcast();
     }
 }
