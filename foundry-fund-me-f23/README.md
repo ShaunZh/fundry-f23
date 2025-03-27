@@ -1,3 +1,7 @@
+## Set up
+
+1. install [@chainlink/contracts](https://github.com/smartcontractkit/chainlink-brownie-contracts): follow this doc to install `@chainlink/contracts`. Note: Don't forget to config `remappings` in `foundry.toml`
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
