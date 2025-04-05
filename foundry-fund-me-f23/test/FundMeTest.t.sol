@@ -7,29 +7,44 @@ import {FundMe} from '../src/FundMe.sol';
 import {DeployFundMe} from '../script/DeployFundMe.s.sol';
 
 contract FundMeTest is Test {
-    FundMe fundme;
+    FundMe fundMe;
+
+    address USER = makeAddr('Hexon');
+    uint256 constant SEND_VALUE = 0.1 ether;
+    uint256 constant STARTING_BALANCE = 1 ether;
+
+
     function setUp() external { 
         DeployFundMe deployer = new DeployFundMe();
-        fundme = deployer.run();
+        fundMe = deployer.run();
+        vm.deal(USER, STARTING_BALANCE);
     }
 
     function testMinimumDollarIsFive() public view {
-        assertEq(fundme.MINIMUM_USD(), 5e18);
+        assertEq(fundMe.MINIMUM_USD(), 5e18);
     }
 
     function testOwnerIsMsgSender() public view {
-        console.log(fundme.i_owner());
+        console.log(fundMe.i_owner());
         console.log(msg.sender);
-        assertEq(fundme.i_owner(), msg.sender);
+        assertEq(fundMe.i_owner(), msg.sender);
     }
 
     function testPriceFeedVersionIsAccurate() public view {
-        uint256 version = fundme.getVersion();
+        uint256 version = fundMe.getVersion();
         assertEq(version, 4);
     }
 
     function testFundFailsWithoutEnoughETH() public {
-        // vm.expectRevert();
-        // uint256 cat = 1;
+        vm.expectRevert(); // the next line should revert!
+
+        fundMe.fund(); // send 0 value
+    }
+
+    function testFundUpdatesFundedDataStructure() public {
+        vm.prank(USER);
+        fundMe.fund{value: SEND_VALUE}();
+        uint256 amountFunded = fundMe.getAddressToAmountFunded(USER);
+        assertEq(amountFunded, SEND_VALUE);
     }
 }
