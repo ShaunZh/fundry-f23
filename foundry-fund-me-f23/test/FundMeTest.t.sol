@@ -20,7 +20,7 @@ contract FundMeTest is Test {
     function testOwnerIsMsgSender() public view {
         console.log(fundme.i_owner());
         console.log(msg.sender);
-        assertEq(fundme.i_owner(), address(this));
+        assertEq(fundme.i_owner(), msg.sender);
     }
 
     function testPriceFeedVersionIsAccurate() public view {
