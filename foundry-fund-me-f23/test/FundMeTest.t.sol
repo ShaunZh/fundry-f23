@@ -6,6 +6,8 @@ import {Test, console} from 'forge-std/Test.sol';
 import {FundMe} from '../src/FundMe.sol';
 import {DeployFundMe} from '../script/DeployFundMe.s.sol';
 
+uint256 constant GAS_PRICE = 1;
+
 contract FundMeTest is Test {
     FundMe fundMe;
 
@@ -69,17 +71,47 @@ contract FundMeTest is Test {
         // The ETH balance of the contract before the withdraw
         uint256 startingFundmeBalance = address(fundMe).balance;
 
+        vm.txGasPrice(GAS_PRICE);
+        uint256 gasStart = gasleft();
+
         console.log('startingOwnerBalance', startingOwnerBalance);
         console.log('startingFundmeBalance', startingFundmeBalance);
 
-        vm.prank(fundMe.getOwner());
+        vm.startPrank(fundMe.getOwner());
         fundMe.withdraw();
+        vm.stopPrank();
+
+        uint256 gasEnd = gasleft();
+        uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+        console.log("Withdraw consumed: %d gas", gasUsed);
 
         uint256 endingOwnerBalance = fundMe.getOwner().balance;
         console.log('endingOwnerBalance', endingOwnerBalance);
         // uint256 endingFundmeBalance = address(fundMe).balance;
 
         assertEq(endingOwnerBalance, startingOwnerBalance + startingFundmeBalance);
+    }
+
+    function testWithdrawFromMultipleFundersCheaper() public funded {
+       uint160 numberOfFunders = 10;
+        uint160 startingFunderIndex = 1;
+
+        for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
+            hoax(address(i), SEND_VALUE);
+            fundMe.fund{value: SEND_VALUE}();
+        }
+
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.cheaperWithdraw();
+        vm.stopPrank();
+
+        assert(address(fundMe).balance == 0);
+        assert(
+            startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance
+            ); 
     }
 
     function testWithdrawWithMultipleFunders() public funded {
