@@ -3,8 +3,8 @@
 pragma solidity ^0.8.13;
 
 import {Test, console} from 'forge-std/Test.sol';
-import {FundMe} from '../src/FundMe.sol';
-import {DeployFundMe} from '../script/DeployFundMe.s.sol';
+import {FundMe} from '../../src/FundMe.sol';
+import {DeployFundMe} from '../../script/DeployFundMe.s.sol';
 
 uint256 constant GAS_PRICE = 1;
 
